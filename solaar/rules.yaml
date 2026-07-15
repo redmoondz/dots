@@ -11,3 +11,11 @@
   - [Control_L, Shift_L, Tab]
   - click
 ...
+---
+- MouseGesture: [Mouse Gesture Button, Mouse Left]
+- Execute: [hyprctl, dispatch, 'hl.dsp.focus({ workspace = "-1" })']
+...
+---
+- MouseGesture: [Mouse Gesture Button, Mouse Right]
+- Execute: [hyprctl, dispatch, 'hl.dsp.focus({ workspace = "+1" })']
+...
