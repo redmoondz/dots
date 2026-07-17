@@ -5,118 +5,118 @@ Arch Linux rice: **Hyprland + Noctalia Shell + fish + alacritty/kitty**, NVIDIA 
 ![rice](media/no_widnows.png)
 ![alacritty](media/alacritty.png)
 
-Репо зеркалит `~/.config` (плюс `Wallpapers/` → `~/Pictures/Wallpapers`) и содержит установщик, который разворачивает всю систему с нуля одной командой.
+The repo mirrors `~/.config` (plus `Wallpapers/` → `~/Pictures/Wallpapers`) and ships an installer that rebuilds the whole system from scratch with a single command.
 
-## Состав
+## Contents
 
-| Директория | Что это |
+| Directory | What it is |
 |---|---|
-| `hypr/` | Hyprland на **Lua** (`hyprland.lua` + `config/*.lua`), hypridle/hyprlock/hyprpaper, скрипты обоев и voxtype-toggle |
-| `noctalia/` | Noctalia Shell (quickshell): settings, цвета, плагины |
-| `fish/` | fish + Tide prompt (полностью вендорен, fisher не нужен) |
-| `alacritty/`, `kitty/` | терминалы + коллекции тем |
-| `fastfetch/`, `solaar/`, `voxtype/` | fetch-конфиг, Logitech-девайсы, голосовой ввод |
-| `Wallpapers/` | обои (деплоятся в `~/Pictures/Wallpapers`) |
-| `packages.json` | манифест: пакеты, сервисы, группы, деплой — всё, чем управляет установщик |
-| `install.py` / `install.sh` | установщик и curl-бутстрап |
-| `system/` | системные файлы (`zram-generator.conf` → `/etc/systemd/`) |
+| `hypr/` | Hyprland configured in **Lua** (`hyprland.lua` + `config/*.lua`), hypridle/hyprlock/hyprpaper, wallpaper and voxtype-toggle scripts |
+| `noctalia/` | Noctalia Shell (quickshell): settings, colors, plugins |
+| `fish/` | fish + Tide prompt (fully vendored, no fisher needed) |
+| `alacritty/`, `kitty/` | terminals + theme collections |
+| `fastfetch/`, `solaar/`, `voxtype/` | fetch config, Logitech devices, voice typing |
+| `Wallpapers/` | wallpapers (deployed to `~/Pictures/Wallpapers`) |
+| `packages.json` | manifest: packages, services, groups, deploy rules — everything the installer is driven by |
+| `install.py` / `install.sh` | installer and curl bootstrap |
+| `system/` | system-level files (`zram-generator.conf` → `/etc/systemd/`) |
 
-## Установка на голый Arch
+## Installing on bare Arch
 
-Требования: свежий Arch, пользователь с sudo, сеть. Дальше одна команда:
+Requirements: fresh Arch install, a user with sudo, network access. Then one command:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/redmoondz/dots/master/install.sh | bash
 ```
 
-Бутстрап сам доставит `git` и `python`, склонирует репо в `~/Documents/dots` и запустит `install.py`. Флаги пробрасываются через `bash -s --`:
+The bootstrap installs `git` and `python` if missing, clones the repo to `~/Documents/dots` and runs `install.py`. Flags pass through via `bash -s --`:
 
 ```sh
-# посмотреть, что будет сделано, ничего не меняя
+# preview every action without changing anything
 curl -fsSL https://raw.githubusercontent.com/redmoondz/dots/master/install.sh | bash -s -- --dry-run
 
-# полностью без вопросов (все промпты = дефолты)
+# fully unattended (every prompt takes its default)
 curl -fsSL https://raw.githubusercontent.com/redmoondz/dots/master/install.sh | bash -s -- --noconfirm
 ```
 
-Если репо уже склонировано — то же самое напрямую:
+If the repo is already cloned, run the installer directly:
 
 ```sh
-python3 ~/Documents/dots/install.py install [флаги]
+python3 ~/Documents/dots/install.py install [flags]
 ```
 
-### Что делает установщик (по шагам)
+### What the installer does (step by step)
 
-Все шаги **идемпотентны** — скрипт безопасно перезапускать, готовое печатается как `skip`, изменения как `ok`. Пароль sudo спрашивается один раз (дальше keepalive).
+Every step is **idempotent** — the script is safe to re-run: already-done work prints as `skip`, changes as `ok`. The sudo password is asked once (kept alive for the whole run).
 
-1. **preflight** — проверки: Arch, не root, sudo, сеть
-2. **multilib** — включает `[multilib]` в pacman.conf (steam/wine/lib32)
-3. **update** — `pacman -Syu` (частичные апгрейды на Arch опасны)
-4. **git-config** — user.name/user.email (промпт с дефолтами)
-5. **yay** — сборка yay из AUR через makepkg
-6. **native / aur / npm / curl-tools** — все пакеты из `packages.json`: официальные, AUR (voxtype, noctalia-git, chrome, spotify…), `@openai/codex`, claude-code и codex CLI
-7. **deploy** — конфиги **симлинками**: `~/.config/hypr → ~/Documents/dots/hypr` и т.д. Репо становится единственным источником правды — правки конфигов сразу видны в `git diff`. Существующие папки бэкапятся в `*.bak-<дата>`. Альтернатива: `--mode=copy`
+1. **preflight** — sanity checks: Arch, not root, sudo, network
+2. **multilib** — enables `[multilib]` in pacman.conf (steam/wine/lib32)
+3. **update** — `pacman -Syu` (partial upgrades are dangerous on Arch)
+4. **git-config** — user.name/user.email (prompt with defaults)
+5. **yay** — builds yay from AUR via makepkg
+6. **native / aur / npm / curl-tools** — every package from `packages.json`: official repos, AUR (voxtype, noctalia-git, chrome, spotify…), `@openai/codex`, the claude-code and codex CLIs
+7. **deploy** — configs as **symlinks**: `~/.config/hypr → ~/Documents/dots/hypr` etc. The repo becomes the single source of truth — config edits show up in `git diff` immediately. Existing directories are backed up as `*.bak-<date>`. Alternative: `--mode=copy`
 8. **system-files** — `system/zram-generator.conf` → `/etc/systemd/`
-9. **shell / path / groups** — fish в `/etc/shells` + `chsh`, `~/.local/bin` в PATH, группа `input` (нужна voxtype)
-10. **services** — NetworkManager, bluetooth, cronie, timesyncd. Docker ставится, но сервис **не** включается. `voxtype.service` принудительно выключается — voxtype запускает Hyprland через `exec-once`, двойной запуск краш-лупит
-11. **display-manager** — по умолчанию **SDDM** (`--dm gdm|greetd|tty|skip`). Уже включённый DM не трогается без `--force-dm`
-12. **nvidia-check** — проверка, что dkms собрал модули nvidia (только предупреждает, не чинит)
-13. **voxtype** — скачивание whisper-модели `large-v3` (~3 ГБ, спросит; `--skip-model` чтобы отложить), `--voxtype-gpu` для GPU-инференса
-14. Финальный **чеклист** ручных действий
+9. **shell / path / groups** — fish into `/etc/shells` + `chsh`, `~/.local/bin` on PATH, `input` group (needed by voxtype)
+10. **services** — NetworkManager, bluetooth, cronie, timesyncd. Docker gets installed but its service is **not** enabled. `voxtype.service` is force-disabled — Hyprland launches voxtype via `exec-once`, running both crash-loops
+11. **display-manager** — **SDDM** by default (`--dm gdm|greetd|tty|skip`). An already-enabled DM is never touched without `--force-dm`
+12. **nvidia-check** — verifies dkms built the nvidia modules (warns only, never auto-fixes)
+13. **voxtype** — downloads the `large-v3` whisper model (~3 GB, asks first; `--skip-model` to defer), `--voxtype-gpu` for GPU inference
+14. Final **checklist** of manual follow-ups
 
-### Флаги
+### Flags
 
-| Флаг | Значение |
+| Flag | Meaning |
 |---|---|
-| `--dry-run` | напечатать действия, ничего не выполняя |
-| `--noconfirm` | не задавать вопросов, брать дефолты |
-| `--mode symlink\|copy` | стратегия деплоя конфигов (дефолт: symlink) |
-| `--dm sddm\|gdm\|greetd\|tty\|skip` | display manager (дефолт: sddm) |
-| `--force-dm` | заменить уже включённый DM |
-| `--skip-update / -native / -aur / -npm / -curl / -deploy / -services / -model` | пропустить фазу |
-| `--with-optional` | доставить пакеты из `optional[]` (loupe, papers, hyprpolkitagent…) |
-| `--with-zsh` | задеплоить legacy `.zshrc` |
-| `--voxtype-gpu` | `voxtype setup gpu --enable` |
-| `--git-name / --git-email` | git-идентичность без промпта |
-| `--only шаг1,шаг2` | выполнить только указанные шаги (имена: `--list-steps`) |
+| `--dry-run` | print actions without executing anything |
+| `--noconfirm` | no questions, take defaults |
+| `--mode symlink\|copy` | config deploy strategy (default: symlink) |
+| `--dm sddm\|gdm\|greetd\|tty\|skip` | display manager (default: sddm) |
+| `--force-dm` | replace an already-enabled DM |
+| `--skip-update / -native / -aur / -npm / -curl / -deploy / -services / -model` | skip a phase |
+| `--with-optional` | also install `optional[]` packages (loupe, papers, hyprpolkitagent…) |
+| `--with-zsh` | also deploy the legacy `.zshrc` |
+| `--voxtype-gpu` | run `voxtype setup gpu --enable` |
+| `--git-name / --git-email` | git identity without a prompt |
+| `--only step1,step2` | run only the listed steps (names: `--list-steps`) |
 
-Примеры:
+Examples:
 
 ```sh
-python3 install.py install --only deploy          # только пересоздать симлинки
-python3 install.py install --dm=greetd --force-dm # сменить DM на greetd
+python3 install.py install --only deploy          # just recreate the symlinks
+python3 install.py install --dm=greetd --force-dm # switch the DM to greetd
 python3 install.py install --skip-aur --skip-model --noconfirm
 ```
 
-## Обслуживание
+## Maintenance
 
 ```sh
-python3 install.py sync     # пакетные списки -> packages.json
-python3 install.py check    # все имена пакетов ещё резолвятся в repo/AUR
+python3 install.py sync     # package lists -> packages.json
+python3 install.py check    # verify every package name still resolves in repos/AUR
 ```
 
-- **`sync`** регенерирует `packages.json` из `pacman -Qqen/-Qqem` по правилам `sync_policy`: GNOME-стек исключается, пины (pipewire, порталы, lib32-nvidia-utils, virtualbox-host-dkms…) сохраняются, пакеты из `removed_do_not_install` не возвращаются. Также зеркалит конфиги live → репо, если они ещё не симлинки. Сам ничего не коммитит — только показывает `git status`.
-- **`check`** гоняет `pacman -Si` / `yay -Si` по всем именам — ловит миграции пакетов между AUR и официальными репами. Запускай перед восстановлением на новой машине.
+- **`sync`** regenerates `packages.json` from `pacman -Qqen/-Qqem` using the `sync_policy` rules: the GNOME stack is excluded, pins (pipewire, portals, lib32-nvidia-utils, virtualbox-host-dkms…) are preserved, and packages from `removed_do_not_install` never come back. It also mirrors live configs into the repo if they are not symlinks yet. It never commits — it only shows `git status`.
+- **`check`** runs `pacman -Si` / `yay -Si` over every name — catches packages migrating between AUR and the official repos. Run it before restoring onto a new machine.
 
-Поставил новый пакет → `python3 install.py sync` → `git add -A && git commit && git push`. Поменял конфиг → он уже в репо (симлинки) → просто закоммить.
+Installed a new package → `python3 install.py sync` → `git add -A && git commit && git push`. Changed a config → it's already in the repo (symlinks) → just commit.
 
-## Дизайн-решения
+## Design decisions
 
-- **GNOME исключён.** На исходной машине GNOME стоит параллельно, но восстановление его не тянет: gdm/gnome-shell и весь стек в `sync_policy.exclude_globs`. Исключения: `gnome-keyring` (секреты под Hyprland) и GNOME-зависимости, ставшие явными пакетами (pipewire, bluez, libnotify, noto-fonts, polkit, xdg-desktop-portal-hyprland/-gtk).
-- **Источник правды — pacman, не bash_history.** История хранит опечатки и откаты; манифест собран из `pacman -Qqen/-Qqem` и обновляется `sync`.
-- **`removed_do_not_install`**: epiphany, noctalia-qs (заменён noctalia-git), datagrip, google-chrome-bin, voxtype-cuda — ставились и осознанно удалялись, установщик их никогда не вернёт.
-- **Провайдер-пины**: `lib32-nvidia-utils` и `virtualbox-host-dkms` прописаны явно, иначе `--noconfirm` выберет lib32-mesa / virtualbox-host-modules-arch.
+- **GNOME is excluded.** The source machine has GNOME installed alongside, but the restore doesn't pull it in: gdm/gnome-shell and the whole stack live in `sync_policy.exclude_globs`. Exceptions: `gnome-keyring` (secrets under Hyprland) and former GNOME dependencies promoted to explicit packages (pipewire, bluez, libnotify, noto-fonts, polkit, xdg-desktop-portal-hyprland/-gtk).
+- **The source of truth is pacman, not bash_history.** Shell history is full of typos and reverted installs; the manifest is generated from `pacman -Qqen/-Qqem` and kept fresh by `sync`.
+- **`removed_do_not_install`**: epiphany, noctalia-qs (replaced by noctalia-git), datagrip, google-chrome-bin, voxtype-cuda — installed once and deliberately removed; the installer will never bring them back.
+- **Provider pins**: `lib32-nvidia-utils` and `virtualbox-host-dkms` are listed explicitly, otherwise `--noconfirm` would pick lib32-mesa / virtualbox-host-modules-arch.
 
-## Чеклист после установки (печатается и самим скриптом)
+## Post-install checklist (also printed by the script)
 
-- Перезайти/перезагрузиться — группа `input`, login shell, драйвер NVIDIA
-- Залогиниться в `claude` и `codex`
-- `nvidia-smi` — проверить драйвер после перезагрузки
-- Настроить снапшоты timeshift
-- voxtype: хоткей **SCROLLLOCK** (push-to-talk); тумблер демона — `SUPER+ALT+R`
+- Re-login/reboot — `input` group, login shell, NVIDIA driver
+- Log into `claude` and `codex`
+- `nvidia-smi` — verify the driver after reboot
+- Configure timeshift snapshots
+- voxtype: **SCROLLLOCK** hotkey (push-to-talk); daemon toggle — `SUPER+ALT+R`
 
-## Известные ограничения
+## Known limitations
 
-- Бутстрап yay с нуля, первое включение SDDM, первая сборка dkms и `chsh` не прогонялись на живой голой машине — только в идемпотентном режиме на настроенной системе. При первом реальном восстановлении читай вывод шагов.
-- Whisper-модель (~3 ГБ) не в репо и качается отдельно; без неё voxtype не работает.
-- Логины claude/codex/chrome/spotify и прочие аккаунты не автоматизируются.
+- Bootstrapping yay from scratch, the first SDDM enable, the first dkms build and `chsh` have not been exercised on a real bare machine — only in idempotent mode on the configured system. Watch the step output on the first real restore.
+- The whisper model (~3 GB) is not in the repo and is downloaded separately; voxtype does not work without it.
+- Logins for claude/codex/chrome/spotify and other accounts are not automated.
