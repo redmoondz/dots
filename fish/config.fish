@@ -9,4 +9,8 @@ if status is-interactive
 
 end
 export PATH="$HOME/.local/bin:$PATH"
-export PATH="$HOME/.local/bin:$PATH"
+
+# Added by LM Studio CLI (lms)
+set -gx PATH $PATH /home/redmoon/.lmstudio/bin
+# End of LM Studio CLI section
+

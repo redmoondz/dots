@@ -17,7 +17,7 @@ hl.bind(mainMod .. " + O", hl.dsp.exec_cmd("obs"))
 hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("spotify"))
 hl.bind(mainMod .. " + Z", hl.dsp.exec_cmd("datagrip"))
 
-hl.bind(mainMod .. " + ALT + R", hl.dsp.exec_cmd("voxtype record-toggle"))
+hl.bind(mainMod .. " + ALT + R", hl.dsp.exec_cmd("sh ~/.config/hypr/scripts/voxtype-toggle.sh")) -- toggle voxtype daemon on/off
 
 -- ╭─────────────────────────────────────────────────────────────────╮
 -- │                          Menus                                  │

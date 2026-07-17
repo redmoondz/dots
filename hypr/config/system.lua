@@ -4,6 +4,11 @@
 
 hl.on("hyprland.start", function()
   hl.exec_cmd("solaar -ddd --window=hide") -- MX Master 3 mouse support
+  
+  hl.exec_cmd("Telegram -ddd --window=hide") -- Telegram
+  hl.exec_cmd("steam -ddd --window=hide") -- Steam
+  hl.exec_cmd("discord -ddd --window=hide") -- Discord
+
   hl.exec_cmd("voxtype") -- Speech recognition server
   hl.exec_cmd("noctalia") -- Quickshell
   -- hl.exec_cmd("hyprpaper") -- Wallpaper daemon
@@ -20,7 +25,7 @@ end)
 -- See https://wiki.hypr.land/Configuring/Environment-variables/
 
 -- Cursor settings
-hl.env("XCURSOR_SIZE", "24")
+hl.env("XCURSOR_SIZE", "22")
 hl.env("WLR_NO_HARDWARE_CURSORS", "1")
 
 -- Wayland specific
@@ -36,6 +41,14 @@ hl.env("QT_AUTO_SCREEN_SCALE_FACTOR", "1")
 -- GTK specific
 hl.env("GDK_BACKEND", "wayland,x11")
 
+-- Nvidia specific
+hl.env("GBM_BACKEND", "nvidia-drm")
+hl.env("__GLX_VENDOR_LIBRARY_NAME", "nvidia")
+
+-- Wayland native support for games (including Wine/Proton)
+hl.env("ELECTRON_OZONE_PLATFORM_HINT", "auto")
+hl.env("WINEWAYLAND", "1")
+
 -- ╔═══════════════════════════════════════════════════════════════════╗
 -- ║                        Monitor Configuration                     ║
 -- ╚═══════════════════════════════════════════════════════════════════╝
@@ -44,10 +57,10 @@ hl.env("GDK_BACKEND", "wayland,x11")
 -- Primary laptop display
 hl.monitor(
   { 
-    output = "eDP-1", 
+    output = "DP-1", 
     mode = "1920x1080@60", 
     position = "0x0", 
-    scale = 1 
+    scale = 1
   }
 )
 

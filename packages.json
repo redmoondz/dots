@@ -1,0 +1,229 @@
+{
+  "meta": {
+    "description": "Manifest v2: everything install.py needs to restore this system on bare Arch. Package lists are generated from pacman ground truth (pacman -Qqen / -Qqem) with the GNOME stack excluded.",
+    "generated_on": "2026-07-17",
+    "aur_helper": "yay",
+    "notes": [
+      "google-chrome chosen over google-chrome-bin (they conflict, only one can be installed).",
+      "Noctalia Shell (noctalia-git + quickshell) replaces waybar/rofi/wofi UI, so those are not listed.",
+      "GNOME + GDM are installed on the source machine but deliberately excluded from restore; SDDM is the display manager for fresh installs.",
+      "Entries are either a plain string or {name, reason}. install.py only needs the name.",
+      "Run `python3 install.py check` after Arch repo changes — packages migrate between AUR and official repos over time."
+    ]
+  },
+  "pacman": [
+    "base",
+    "base-devel",
+    "linux",
+    "linux-firmware",
+    "linux-headers",
+    "mkinitcpio",
+    "amd-ucode",
+    "efibootmgr",
+    "btrfs-progs",
+    "zram-generator",
+    "cronie",
+    "smartmontools",
+    "timeshift",
+    "sudo",
+    "wget",
+    "git",
+    "nvidia-open-dkms",
+    { "name": "nvidia-utils", "reason": "dep of nvidia-open-dkms; pinned explicitly so the driver userspace is always present" },
+    "nvidia-settings",
+    "libva-nvidia-driver",
+    { "name": "vulkan-icd-loader", "reason": "Vulkan loader; explicit so GPU stack is complete without relying on dep resolution" },
+    { "name": "lib32-nvidia-utils", "reason": "provider pin: steam needs a lib32 OpenGL driver and --noconfirm would otherwise pick lib32-mesa on an NVIDIA machine" },
+    { "name": "lib32-vulkan-icd-loader", "reason": "32-bit Vulkan loader for Steam/Proton games" },
+    "networkmanager",
+    "network-manager-applet",
+    "wpa_supplicant",
+    { "name": "pipewire", "reason": "audio server; dep-installed via GNOME on source machine, must be explicit on a GNOME-free install" },
+    { "name": "pipewire-pulse", "reason": "PulseAudio compat; same reason as pipewire" },
+    { "name": "wireplumber", "reason": "PipeWire session manager; same reason as pipewire" },
+    "pavucontrol",
+    "easyeffects",
+    "playerctl",
+    { "name": "bluez", "reason": "bluetooth.service is enabled; dep-installed via GNOME on source machine" },
+    { "name": "bluez-utils", "reason": "bluetoothctl CLI — GNOME's bluetooth panel won't exist on the fresh install" },
+    "hyprland",
+    "hypridle",
+    "hyprlock",
+    "hyprpaper",
+    { "name": "quickshell", "reason": "runtime for Noctalia Shell (qs CLI)" },
+    "qt5-wayland",
+    { "name": "xdg-desktop-portal-hyprland", "reason": "replaces xdg-desktop-portal-gnome; hyprland package ships hyprland-portals.conf that selects it" },
+    { "name": "xdg-desktop-portal-gtk", "reason": "fallback portal for file pickers / settings, paired with the hyprland portal" },
+    "wl-clipboard",
+    "cliphist",
+    "grim",
+    "slurp",
+    { "name": "wtype", "reason": "voxtype's default text-output driver" },
+    "dunst",
+    { "name": "libnotify", "reason": "notify-send used by hypr scripts/binds; dep-installed via GNOME on source machine" },
+    "brightnessctl",
+    "ddcutil",
+    "power-profiles-daemon",
+    { "name": "polkit", "reason": "privilege prompts; dep-installed via GNOME on source machine" },
+    { "name": "gnome-keyring", "reason": "kept despite GNOME exclusion — secrets/SSH agent under Hyprland (user socket is enabled)" },
+    "xdg-utils",
+    { "name": "xdg-user-dirs", "reason": "replaces xdg-user-dirs-gtk (GNOME variant)" },
+    { "name": "nautilus", "reason": "file manager bound in hypr binds.lua" },
+    { "name": "sushi", "reason": "nautilus previewer" },
+    "gvfs",
+    "gvfs-afc",
+    "gvfs-dnssd",
+    "gvfs-gphoto2",
+    "gvfs-mtp",
+    "gvfs-nfs",
+    "gvfs-smb",
+    "gvfs-wsdd",
+    "gst-thumbnailers",
+    "alacritty",
+    "kitty",
+    "fish",
+    "fastfetch",
+    "bat",
+    "lsd",
+    "htop",
+    "micro",
+    "nano",
+    "neovim",
+    "vim",
+    "cmatrix",
+    { "name": "npm", "reason": "needed for npm_global packages below" },
+    "ttf-firacode-nerd",
+    "ttf-jetbrains-mono",
+    { "name": "ttf-liberation", "reason": "baseline font fallback (also a steam dependency)" },
+    { "name": "noto-fonts", "reason": "unicode text fallback — on the source machine fallback fonts arrive via GNOME deps" },
+    { "name": "noto-fonts-emoji", "reason": "emoji fallback; dep-installed via GNOME on source machine" },
+    "firefox",
+    "telegram-desktop",
+    "discord",
+    "obs-studio",
+    "qbittorrent",
+    { "name": "solaar", "reason": "Logitech device manager, config tracked in repo" },
+    { "name": "evolution", "reason": "mail client — deliberate keep despite GNOME lineage" },
+    "steam",
+    "lutris",
+    "wine",
+    "wine-gecko",
+    "wine-mono",
+    "winetricks",
+    "lib32-giflib",
+    "lib32-libvdpau",
+    "lib32-mpg123",
+    "lib32-sdl2-compat",
+    { "name": "docker", "reason": "installed but docker.service intentionally NOT enabled — started manually when needed" },
+    "virtualbox",
+    { "name": "virtualbox-host-dkms", "reason": "provider pin: --noconfirm would otherwise pick virtualbox-host-modules-arch, but this machine runs DKMS modules" }
+  ],
+  "aur": [
+    "google-chrome",
+    "lmstudio-bin",
+    { "name": "noctalia-git", "reason": "the desktop shell (replaced noctalia-qs, which was removed)" },
+    { "name": "paru", "reason": "second AUR helper, used alongside yay" },
+    "slack",
+    "spotify",
+    "visual-studio-code-bin",
+    { "name": "voxtype", "reason": "push-to-talk dictation (plain package, NOT voxtype-cuda). Launched by Hyprland exec-once — never enable voxtype.service" }
+  ],
+  "optional": [
+    { "name": "loupe", "reason": "GNOME image viewer — useful standalone, install with --with-optional" },
+    { "name": "papers", "reason": "GNOME PDF viewer" },
+    { "name": "decibels", "reason": "GNOME audio player" },
+    { "name": "showtime", "reason": "GNOME video player" },
+    { "name": "baobab", "reason": "disk usage analyzer" },
+    { "name": "gnome-disk-utility", "reason": "disk/partition GUI" },
+    { "name": "simple-scan", "reason": "scanner GUI" },
+    { "name": "gvfs-goa", "reason": "requires GNOME Online Accounts" },
+    { "name": "gvfs-onedrive", "reason": "requires GNOME Online Accounts" },
+    { "name": "hyprpolkitagent", "reason": "polkit agent for Hyprland — no agent runs today (polkit-gnome exec-once is commented out in system.lua)" },
+    { "name": "ibus", "reason": "input method framework; explicitly installed once but now only a GNOME dep, unclear if used under Hyprland" }
+  ],
+  "removed_do_not_install": [
+    { "name": "epiphany", "reason": "removed via pacman -R" },
+    { "name": "noctalia-qs", "reason": "removed, replaced by noctalia-git" },
+    { "name": "datagrip", "reason": "installed then removed (paru -Rdd) — final state: not installed" },
+    { "name": "google-chrome-bin", "reason": "conflicts with google-chrome" },
+    { "name": "yay-debug", "reason": "makepkg debug artifact, never install explicitly" },
+    { "name": "voxtype-cuda", "reason": "only test-cloned once; the plain voxtype package is what's actually used" }
+  ],
+  "npm_global": ["@openai/codex"],
+  "curl_installers": [
+    {
+      "name": "claude-code",
+      "url": "https://claude.ai/install.sh",
+      "shell": "bash",
+      "creates": "~/.local/bin/claude",
+      "note": "needs interactive `claude` login afterwards"
+    },
+    {
+      "name": "codex-cli",
+      "url": "https://chatgpt.com/codex/install.sh",
+      "shell": "sh",
+      "creates": "~/.local/bin/codex",
+      "note": "needs interactive `codex` login afterwards"
+    }
+  ],
+  "services": {
+    "system_enable": ["NetworkManager", "bluetooth", "cronie", "systemd-timesyncd"],
+    "system_do_not_enable": [
+      { "name": "docker", "reason": "started manually when needed" }
+    ],
+    "user_verify": ["pipewire.socket", "pipewire-pulse.socket", "wireplumber.service", "gnome-keyring-daemon.socket"],
+    "user_do_not_enable": [
+      { "name": "voxtype.service", "reason": "Hyprland exec-once launches voxtype; running both crash-loops ('another voxtype instance is already running')" }
+    ]
+  },
+  "groups": [
+    { "name": "input", "reason": "voxtype needs evdev access for the push-to-talk hotkey" }
+  ],
+  "shell": { "name": "fish", "path": "/usr/bin/fish" },
+  "display_manager": {
+    "default": "sddm",
+    "variants": {
+      "sddm":   { "packages": ["sddm"], "enable": "sddm.service" },
+      "gdm":    { "packages": ["gdm"], "enable": "gdm.service" },
+      "greetd": { "packages": ["greetd", "greetd-tuigreet"], "enable": "greetd.service" },
+      "tty":    { "packages": [], "enable": null },
+      "skip":   { "packages": [], "enable": null }
+    }
+  },
+  "deploy": {
+    "default_mode": "symlink",
+    "config_dirs": ["alacritty", "fastfetch", "fish", "hypr", "kitty", "noctalia", "solaar", "voxtype"],
+    "wallpapers": {
+      "src": "Wallpapers",
+      "dst": "~/Pictures/Wallpapers",
+      "compat_symlink": "~/Pictures/Wallpaper",
+      "compat_reason": "hypr wallpaper scripts and noctalia settings.json reference the singular path"
+    },
+    "system_files": [
+      { "src": "system/zram-generator.conf", "dst": "/etc/systemd/zram-generator.conf", "mode": "0644" }
+    ]
+  },
+  "git_defaults": { "user.name": "Stanislav", "user.email": "s.rublivskyi@gmail.com" },
+  "voxtype": {
+    "model_path": "~/.local/share/voxtype/models/ggml-large-v3.bin",
+    "model_name": "large-v3",
+    "download_size": "~3 GB"
+  },
+  "sync_policy": {
+    "description": "Rules used by `install.py sync` to regenerate pacman[]/aur[] from live pacman state.",
+    "exclude_globs": [
+      "gdm", "gnome-*", "grilo-plugins", "gst-plugin-*", "malcontent", "orca", "rygel",
+      "snapshot", "tecla", "yelp", "epiphany",
+      "xdg-desktop-portal-gnome", "xdg-user-dirs-gtk"
+    ],
+    "keep_exceptions": ["gnome-keyring"],
+    "aur_exclude_globs": ["yay", "*-debug"],
+    "keep_always": [
+      "pipewire", "pipewire-pulse", "wireplumber", "bluez", "bluez-utils", "libnotify",
+      "xdg-user-dirs", "noto-fonts", "noto-fonts-emoji", "ttf-liberation", "polkit",
+      "xdg-desktop-portal-hyprland", "xdg-desktop-portal-gtk",
+      "nvidia-utils", "vulkan-icd-loader", "lib32-nvidia-utils", "lib32-vulkan-icd-loader",
+      "virtualbox-host-dkms"
+    ]
+  }
+}
